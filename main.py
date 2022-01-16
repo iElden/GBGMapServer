@@ -2,6 +2,7 @@ import asyncio
 
 from MapRequester import MapRequester
 from ImageEditor import ImageEditor
+from UDPSocket import GBServerProtocol
 
 async def main():
     mm = MapRequester('private/bing_api_key')
@@ -10,4 +11,7 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    asyncio.run(main())
+    loop = asyncio.get_event_loop()
+    sock = loop.create_datagram_endpoint(GBServerProtocol, local_addr=('0.0.0.0', 23568))
+    loop.run_until_complete(sock)
+    loop.run_forever()

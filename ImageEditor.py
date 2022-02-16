@@ -1,10 +1,10 @@
 from PIL import Image
 import io
+from typing import List
 
-from models import RawPngResponse
+from models import RawPngResponse, Tile
 
 class ImageEditor:
-
     @staticmethod
     def lower_resolution_to(png : RawPngResponse, x : int, y : int) -> Image.Image:
         img = Image.open(io.BytesIO(png.raw_data))
@@ -12,4 +12,18 @@ class ImageEditor:
         result = small_img.resize(img.size, Image.NEAREST)
         result.save("tmp2.png")
         return small_img
+
+    @staticmethod
+    def img_to_tiles(img : Image.Image) -> List[Tile]:
+        tiles = []
+        for x in range(0, img.height, 2):
+            for y in range(0, img.height, 2):
+                tiles.append(Tile(
+                    Tile.get_tile_id_for_color(img.getpixel((x, y))),
+                    Tile.get_tile_id_for_color(img.getpixel((x, y + 1))),
+                    Tile.get_tile_id_for_color(img.getpixel((x + 1, y))),
+                    Tile.get_tile_id_for_color(img.getpixel((x + 1, y + 1)))
+                ))
+        print(f"img_to_tiles return tiles array of {len(tiles)} elements")
+        return tiles
 

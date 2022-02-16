@@ -7,7 +7,8 @@ if __name__ == '__main__':
 from models import Tile
 
 def tiles_to_png(tiles, max_y):
-    img = Image.new('RGB', ((len(tiles) // max_y) * 8, max_y * 8))
+    # img = Image.new('RGB', ((len(tiles) // max_y) * 8, max_y * 8))
+    img = Image.new('RGB', (max_y * 8,(len(tiles) // max_y) * 8))
     for i, tile in enumerate(tiles):
         x = i // max_y
         y = i % max_y

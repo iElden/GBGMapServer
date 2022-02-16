@@ -27,3 +27,13 @@ class ImageEditor:
         print(f"img_to_tiles return tiles array of {len(tiles)} elements")
         return tiles
 
+    @staticmethod
+    def add_padding_to_tiles(tiles : List[Tile], pad_from=18, pad_to=32) -> List[Tile]:
+        result = []
+        blank_tile = [Tile(0, 0, 0, 0)] * (pad_to - pad_from)
+        for i in range(len(tiles) // pad_from):
+            result.extend(tiles[i*pad_from:(i+1)*pad_from])
+            result.extend(blank_tile)
+        print(f"Added padding: tiles array now {len(result)} elements")
+        return result
+

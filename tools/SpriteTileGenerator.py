@@ -6,14 +6,17 @@ if __name__ == '__main__':
 
 from models import Tile
 
-def tiles_to_png(tiles, max_y):
+def tiles_to_png(tiles, max_x):
     # img = Image.new('RGB', ((len(tiles) // max_y) * 8, max_y * 8))
-    img = Image.new('RGB', (max_y * 8,(len(tiles) // max_y) * 8))
+    img = Image.new('RGB', (max_x * 8, (len(tiles) // max_x) * 8))
     for i, tile in enumerate(tiles):
-        x = i // max_y
-        y = i % max_y
-        sub_img = tile.to_jpg()
-        img.paste(sub_img, (x*8, y*8) )
+        b = tile.to_byte()
+        x = i % max_x
+        y = i // max_x
+        with Image.open("tools/tilemap.png") as tilemap:
+            for x2 in range(8):
+                for y2 in range(8):
+                    img.putpixel((x*8+x2, y*8+y2), tilemap.getpixel(((b % 16) * 8 + x2, (b // 16) * 8 + y2)))
     img.save('tiles_to_png.png')
 
 def main():

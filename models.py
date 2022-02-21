@@ -47,8 +47,8 @@ class Tile:
     def to_jpg(self) -> Image.Image:
         img = Image.new('RGB', (8, 8))
         for i in range(8*8):
-            x = i // 8
-            y = i % 8
+            x = i % 8
+            y = i // 8
             img.putpixel((x, y), self.color_id_to_rgb(self.get_color_id_by_coordinate(x, y)))
         return img
 

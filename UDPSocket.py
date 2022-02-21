@@ -16,4 +16,4 @@ class GBServerProtocol(asyncio.DatagramProtocol):
     def datagram_received(self, data: bytes, addr: Tuple[str, int]) -> None:
         print(f"Recieved packet : {data} from {addr}")
         response = mapRequester.from_gb_input(data)
-        self.socket.sendto(response, addr)
+        self.socket.sendto(bytes([1]) + response, addr)

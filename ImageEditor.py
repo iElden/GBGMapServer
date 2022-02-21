@@ -37,3 +37,11 @@ class ImageEditor:
         print(f"Added padding: tiles array now {len(result)} elements")
         return result
 
+    @staticmethod
+    def remove_bouteille(tiles: List[Tile]) -> List[Tile]:
+        arr = [0] * len(tiles)
+        print(len(tiles))
+        for x in range(18):
+            for y in range(18):
+                arr[x + y * 18] = tiles[y + x * 18]
+        return arr

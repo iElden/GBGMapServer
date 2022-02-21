@@ -19,7 +19,7 @@ class MapRequester:
                                    params={'mapSize': f"{self.IMG_SIZE},{self.IMG_SIZE}", 'key':self._api_key}) as resp:
             return RawPngResponse(await resp.read())
 
-    async def from_gb_input(self, data):
+    def from_gb_input(self, data):
         return self.tmp_global
 
 

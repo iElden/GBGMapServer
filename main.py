@@ -9,6 +9,7 @@ async def test_request_packet():
     png = await mapRequester.request_image_by_center(0, 0, 3)
     img = ImageEditor.lower_resolution_to(png, 40, 36)
     tiles = ImageEditor.img_to_tiles(img)
+    tiles = ImageEditor.remove_bouteille(tiles)
     tiles = ImageEditor.add_padding_to_tiles(tiles)
     tiles_to_png(tiles, 32)
     return bytes([tile.to_byte() for tile in tiles])

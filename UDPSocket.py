@@ -1,10 +1,12 @@
 import socket
 import asyncio
+import struct
+import traceback
 from typing import Tuple
 
 from ImageEditor import ImageEditor
 from MapRequester import MapRequester
-from tools.SpriteTileGenerator import tiles_to_png
+from tools.SpriteTileGenerator import tiles_to_png, old_tiles_to_png
 
 
 class GBServer:
@@ -30,10 +32,10 @@ class GBServer:
 
     def callback(self, data) -> bytes:
         try:
-            h = int.from_bytes(data[0:4], byteorder="little", signed=True)
-            v = int.from_bytes(data[4:8], byteorder="little", signed=True)
-            zoom = data[8]
+            print(data)
+            op, h, v, zoom = struct.unpack("<BffB", data)
             self.zoom = zoom + 1
+            print(op, h, v, zoom)
             if h < 0: # left
                 self.x -= (240 / self.zoom**2)
             elif h > 0: # right
@@ -52,13 +54,15 @@ class GBServer:
                 self.y = 180 - self.y
             return asyncio.run(self.request_gb_bytes())
         except Exception as e:
+            traceback.print_exception(e)
             return b"\x02" + bytes(e.__class__.__name__, encoding="ASCII")
 
-    async def request_gb_bytes(self) -> bytes:
-        png = await self.mapRequester.request_image_by_center(self.x, self.y, 3)
+    async def request_gb_bytes(self):
+        png = await self.mapRequester.request_image_by_center(self.x, self.y, self.zoom)
         img = ImageEditor.lower_resolution_to(png, 40, 36)
         tiles = ImageEditor.img_to_tiles(img)
-        tiles = ImageEditor.add_padding_to_tiles(tiles)
+        tiles = ImageEditor.add_padding_to_tiles(tiles, 20, 32)
         tiles_to_png(tiles, 32)
-        return bytes([tile.to_byte() for tile in tiles])
+        old_tiles_to_png(tiles, 32)
+        return b'\x01' + bytes([tile.to_byte() for tile in tiles])
 

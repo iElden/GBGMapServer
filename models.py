@@ -35,9 +35,9 @@ class Tile:
     def get_color_id_by_coordinate(self, x, y) -> COLOR_ID:
         low_y = y <= 3
         if x <= 3:
-            return self.a if low_y else self.b
+            return self.a if low_y else self.c
         else:
-            return self.c if low_y else self.d
+            return self.b if low_y else self.d
 
     @staticmethod
     def color_id_to_rgb(i) -> COLOR_TUPLE:

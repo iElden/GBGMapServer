@@ -6,6 +6,16 @@ if __name__ == '__main__':
 
 from models import Tile
 
+def old_tiles_to_png(tiles, max_y):
+    # img = Image.new('RGB', ((len(tiles) // max_y) * 8, max_y * 8))
+    img = Image.new('RGB', (max_y * 8,(len(tiles) // max_y) * 8))
+    for i, tile in enumerate(tiles):
+        x = i % max_y
+        y = i // max_y
+        sub_img = tile.to_jpg()
+        img.paste(sub_img, (x*8, y*8))
+    img.save('tiles_to_png2.png')
+
 def tiles_to_png(tiles, max_x):
     # img = Image.new('RGB', ((len(tiles) // max_y) * 8, max_y * 8))
     img = Image.new('RGB', (max_x * 8, (len(tiles) // max_x) * 8))
@@ -29,7 +39,7 @@ def main():
         tile = Tile(a, b, c, d)
         tiles.append(tile)
         # jpegs.append(tile.to_jpg())
-    tiles_to_png(tiles, 16)
+    old_tiles_to_png(tiles, 16)
 
 if __name__ == '__main__':
     main()

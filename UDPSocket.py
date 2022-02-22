@@ -75,6 +75,8 @@ class GBServer:
                 coords.x = x
                 coords.y = y
                 return asyncio.run(self.request_gb_bytes())
+            else:
+                return b"\x02Unknown Opcode\x00"
         except Exception as e:
             traceback.print_exc()
             return b"\x02" + bytes(e.__class__.__name__, encoding="ASCII") + b"\x00"

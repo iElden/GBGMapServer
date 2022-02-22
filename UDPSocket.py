@@ -50,31 +50,31 @@ class GBServer:
                 coords.zoom = zoom + 1
                 print(op, h, v, zoom)
                 if h < 0: # left
-                    coords.x -= (240 / coords.zoom**2)
+                    coords.x -= (240 / 2**coords.zoom)
                 elif h > 0: # right
-                    coords.x += (240 / coords.zoom**2)
+                    coords.x += (240 / 2**coords.zoom)
                 if v < 0: # Down
-                    coords.y -= (240 / coords.zoom**2)
+                    coords.y -= (240 / 2**coords.zoom)
                 elif v > 0:  # Up
-                    coords.y += (240 / coords.zoom**2)
+                    coords.y += (240 / 2**coords.zoom)
                 if coords.x > 180:
                     coords.x = -360 + coords.x
                 if coords.x < -180:
-                    coords.x = 360 - coords.x
+                    coords.x = 360 + coords.x
                 if coords.y > 90:
                     coords.y = -180 + coords.y
                 if coords.y < -90:
-                    coords.y = 180 - coords.y
+                    coords.y = 180 + coords.y
                 return asyncio.run(self.request_gb_bytes())
             if op == 2:
                 x, y = self.mapRequester.get_coords_for_query(data[1:])
                 if not x and not y:
-                    return b"\x02Location not found"
+                    return b"\x02Location not found\x00"
                 coords.x = x
                 coords.y = y
                 return asyncio.run(self.request_gb_bytes())
         except Exception as e:
-            return b"\x02" + bytes(e.__class__.__name__, encoding="ASCII")
+            return b"\x02" + bytes(e.__class__.__name__, encoding="ASCII") + b"\x00"
 
     async def request_gb_bytes(self):
         png = await self.mapRequester.request_image_by_center(self.x, self.y, self.zoom)

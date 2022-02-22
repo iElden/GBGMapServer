@@ -1,5 +1,6 @@
 from typing import Tuple
 from PIL import Image
+from statistics import mean
 
 COLOR_ID_TO_PIXEL_COLOR = [0xFF, 0xAA, 0x55, 0x00]
 
@@ -23,14 +24,14 @@ class Tile:
     @staticmethod
     def get_tile_id_for_color(color : COLOR_TUPLE):
         r, g, b = color
-        if g > b and g > r:
-            return 2
-        if b > r and b > g:
+        m = mean([r, g, b])
+        if m > 175:
             return 0
-        # mostly red at this point
-        if b <= 90:
-            return 3
-        return 1
+        if m > 100:
+            return 1
+        if m > 50:
+            return 2
+        return 3
 
     def get_color_id_by_coordinate(self, x, y) -> COLOR_ID:
         low_y = y <= 3

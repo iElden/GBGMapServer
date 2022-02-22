@@ -35,22 +35,26 @@ class GBServer:
             zoom = data[8]
             self.zoom = zoom + 1
             if h < 0: # left
-                print("Left")
-                self.x -= (240 / self.zoom)
+                self.x -= (240 / self.zoom**2)
             elif h > 0: # right
-                print("Right")
-                self.x += (240 / self.zoom)
+                self.x += (240 / self.zoom**2)
             if v < 0: # Down
-                print("Up")
-                self.y -= (240 / self.zoom)
+                self.y -= (240 / self.zoom**2)
             elif v > 0:  # Up
-                print("Up")
-                self.y += (240 / self.zoom)
+                self.y += (240 / self.zoom**2)
+            if self.x > 180:
+                self.x = -360 + self.x
+            if self.x < -180:
+                self.x = 360 - self.x
+            if self.y > 90:
+                self.y = -180 + self.y
+            if self.y < -90:
+                self.y = 180 - self.y
             return asyncio.run(self.request_gb_bytes())
         except Exception as e:
-            return b"\x02" + bytes(e.__class__.__name__)
+            return b"\x02" + bytes(e.__class__.__name__, encoding="ASCII")
 
-    async def request_gb_bytes(self):
+    async def request_gb_bytes(self) -> bytes:
         png = await self.mapRequester.request_image_by_center(self.x, self.y, 3)
         img = ImageEditor.lower_resolution_to(png, 40, 36)
         tiles = ImageEditor.img_to_tiles(img)

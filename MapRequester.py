@@ -8,7 +8,7 @@ from models import RawPngResponse
 class MapRequester:
     BASE_URL = 'https://dev.virtualearth.net/'
     IMAGE_BY_CENTER_BASE = BASE_URL + "REST/v1/Imagery/Map/Aerial"
-    LOCATION_LIST = "REST/v1/Locations"
+    LOCATION_LIST = BASE_URL + "REST/v1/Locations"
     IMG_SIZE = 500
 
     tmp_global = b"blabla"

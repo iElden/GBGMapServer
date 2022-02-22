@@ -43,7 +43,7 @@ class GBServer:
 
     def callback(self, data, addr) -> bytes:
         try:
-            coords = self.client[addr[0]]
+            coords = self.client.get(addr[0], ClientCoords(0, 0, 0))
             print(data)
             op, h, v, zoom = struct.unpack("<BffB", data)
             if op == 1:
@@ -65,21 +65,23 @@ class GBServer:
                     coords.y = -180 + coords.y
                 if coords.y < -90:
                     coords.y = 180 + coords.y
-                return asyncio.run(self.request_gb_bytes())
+                return asyncio.run(self.request_gb_bytes(coords))
             if op == 2:
                 x, y = self.mapRequester.get_coords_for_query(data[1:])
                 if not x and not y:
                     return b"\x02Location not found\x00"
                 coords.x = x
                 coords.y = y
-                return asyncio.run(self.request_gb_bytes())
+                return asyncio.run(self.request_gb_bytes(coords))
             else:
                 return b"\x02Unknown Opcode\x00"
         except Exception as e:
             return b"\x02" + bytes(e.__class__.__name__, encoding="ASCII") + b"\x00"
+        finally:
+            self.client[addr[0]] = coords
 
-    async def request_gb_bytes(self):
-        png = await self.mapRequester.request_image_by_center(self.x, self.y, self.zoom)
+    async def request_gb_bytes(self, coords):
+        png = await self.mapRequester.request_image_by_center(coords.x, coords.y, coords.zoom)
         img = ImageEditor.lower_resolution_to(png, 40, 36)
         tiles = ImageEditor.img_to_tiles(img)
         tiles = ImageEditor.add_padding_to_tiles(tiles, 20, 32)

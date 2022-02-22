@@ -1,5 +1,6 @@
 import socket
 import asyncio
+import struct
 from typing import Tuple
 
 from ImageEditor import ImageEditor
@@ -30,10 +31,10 @@ class GBServer:
 
     def callback(self, data) -> bytes:
         try:
-            h = int.from_bytes(data[0:4], byteorder="little", signed=True)
-            v = int.from_bytes(data[4:8], byteorder="little", signed=True)
-            zoom = data[8]
+            print(data)
+            op, h, v, zoom = struct.unpack("<BffB", data)
             self.zoom = zoom + 1
+            print(op, h, v, zoom)
             if h < 0: # left
                 print("Left")
                 self.x -= (240 / self.zoom)
@@ -48,7 +49,7 @@ class GBServer:
                 self.y += (240 / self.zoom)
             return asyncio.run(self.request_gb_bytes())
         except Exception as e:
-            return b"\x02" + bytes(e.__class__.__name__)
+            return b"\x02" + bytes(e.__class__.__name__, encoding="ASCII")
 
     async def request_gb_bytes(self):
         png = await self.mapRequester.request_image_by_center(self.x, self.y, 3)

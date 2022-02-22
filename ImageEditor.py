@@ -7,7 +7,7 @@ from models import RawPngResponse, Tile
 class ImageEditor:
     @staticmethod
     def lower_resolution_to(png : RawPngResponse, x : int, y : int) -> Image.Image:
-        img = Image.open(io.BytesIO(png.raw_data))
+        img = Image.open(io.BytesIO(png.raw_data)).convert('RGB')
         small_img = img.resize((x,y),resample=Image.BILINEAR)
         result = small_img.convert('LA').resize(img.size, Image.NEAREST)
         result.save("tmp2.png")

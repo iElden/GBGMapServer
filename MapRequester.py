@@ -30,9 +30,13 @@ class MapRequester:
                                    params={'key': self._api_key}) as resp:
             js = await resp.json()
             try:
-                res = js['resourceSets']['resources']
+                res = js['resourceSets'][0]['resources']
                 if not res:
                     return (0, 0)
+                print(res[0])
                 return res[0]['point']['coordinates']
             except Exception as e:
+                import traceback
+                traceback.print_exc()
+                print(js)
                 return (0, 0)

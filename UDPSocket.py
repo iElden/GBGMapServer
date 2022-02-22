@@ -44,7 +44,7 @@ class GBServer:
 
     def callback(self, data, addr) -> bytes:
         try:
-            coords = self.client.get(addr[0], ClientCoords(0, 0, 0))
+            coords = self.client.get(addr[0], ClientCoords(0, 0, 1))
             print(data)
             op = data[0]
             if op == 1:
@@ -72,8 +72,8 @@ class GBServer:
                 x, y = asyncio.run(self.mapRequester.get_coords_for_query(data[1:]))
                 if not x and not y:
                     return b"\x02Location not found\x00"
-                coords.x = x
-                coords.y = y
+                coords.x = y
+                coords.y = x
                 return asyncio.run(self.request_gb_bytes(coords))
             else:
                 return b"\x02Unknown Opcode\x00"

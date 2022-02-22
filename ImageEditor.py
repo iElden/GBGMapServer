@@ -16,8 +16,8 @@ class ImageEditor:
     @staticmethod
     def img_to_tiles(img : Image.Image) -> List[Tile]:
         tiles = []
-        for x in range(0, img.width, 2):
-            for y in range(0, img.height, 2):
+        for y in range(0, img.height, 2):
+            for x in range(0, img.width, 2):
                 tiles.append(Tile(
                     Tile.get_tile_id_for_color(img.getpixel((x  , y))),
                     Tile.get_tile_id_for_color(img.getpixel((x+1, y))),
@@ -28,7 +28,7 @@ class ImageEditor:
         return tiles
 
     @staticmethod
-    def add_padding_to_tiles(tiles : List[Tile], pad_from=18, pad_to=32) -> List[Tile]:
+    def add_padding_to_tiles(tiles : List[Tile], pad_from, pad_to) -> List[Tile]:
         result = []
         blank_tile = [Tile(0, 0, 0, 0)] * (pad_to - pad_from)
         for i in range(len(tiles) // pad_from):

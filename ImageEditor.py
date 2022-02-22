@@ -16,13 +16,13 @@ class ImageEditor:
     @staticmethod
     def img_to_tiles(img : Image.Image) -> List[Tile]:
         tiles = []
-        for x in range(0, img.height, 2):
+        for x in range(0, img.width, 2):
             for y in range(0, img.height, 2):
                 tiles.append(Tile(
-                    Tile.get_tile_id_for_color(img.getpixel((x, y))),
-                    Tile.get_tile_id_for_color(img.getpixel((x, y + 1))),
-                    Tile.get_tile_id_for_color(img.getpixel((x + 1, y))),
-                    Tile.get_tile_id_for_color(img.getpixel((x + 1, y + 1)))
+                    Tile.get_tile_id_for_color(img.getpixel((x  , y))),
+                    Tile.get_tile_id_for_color(img.getpixel((x+1, y))),
+                    Tile.get_tile_id_for_color(img.getpixel((x  , y+1))),
+                    Tile.get_tile_id_for_color(img.getpixel((x+1, y+1)))
                 ))
         print(f"img_to_tiles return tiles array of {len(tiles)} elements")
         return tiles
@@ -36,12 +36,3 @@ class ImageEditor:
             result.extend(blank_tile)
         print(f"Added padding: tiles array now {len(result)} elements")
         return result
-
-    @staticmethod
-    def remove_bouteille(tiles: List[Tile]) -> List[Tile]:
-        arr = [0] * len(tiles)
-        print(len(tiles))
-        for x in range(18):
-            for y in range(18):
-                arr[x + y * 18] = tiles[y + x * 18]
-        return arr

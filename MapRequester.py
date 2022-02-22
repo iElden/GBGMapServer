@@ -17,6 +17,6 @@ class MapRequester:
 
     async def request_image_by_center(self, x : float, y : float, zoomLevel : int) -> RawPngResponse:
         async with aiohttp.request('GET',
-                                   f"{self.IMAGE_BY_CENTER_BASE}/{x},{y}/{zoomLevel}",
+                                   f"{self.IMAGE_BY_CENTER_BASE}/{y},{x}/{zoomLevel}",
                                    params={'mapSize': f"{self.IMG_SIZE},{self.IMG_SIZE}", 'key':self._api_key}) as resp:
             return RawPngResponse(await resp.read())

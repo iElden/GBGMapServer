@@ -10,7 +10,7 @@ bufferSize = 1024
 
 # Create a UDP socket at client side
 
-with socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM) as s:
+with socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM) as s:
     s.connect(serverAddressPort)
     s.sendall(bytesToSend)
     data = s.recv(1024)

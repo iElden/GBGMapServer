@@ -37,21 +37,21 @@ class GBServer:
             self.zoom = zoom + 1
             print(op, h, v, zoom)
             if h < 0: # left
-                self.x -= (240 / self.zoom**2)
+                self.x -= (240 / 2**self.zoom)
             elif h > 0: # right
-                self.x += (240 / self.zoom**2)
+                self.x += (240 / 2**self.zoom)
             if v < 0: # Down
-                self.y -= (240 / self.zoom**2)
+                self.y -= (240 / 2**self.zoom)
             elif v > 0:  # Up
-                self.y += (240 / self.zoom**2)
-            if self.x > 180:
+                self.y += (240 / 2**self.zoom)
+            while self.x > 180:
                 self.x = -360 + self.x
-            if self.x < -180:
-                self.x = 360 - self.x
-            if self.y > 90:
+            while self.x < -180:
+                self.x = 360 + self.x
+            while self.y > 90:
                 self.y = -180 + self.y
-            if self.y < -90:
-                self.y = 180 - self.y
+            while self.y < -90:
+                self.y = 180 + self.y
             return asyncio.run(self.request_gb_bytes())
         except Exception as e:
             traceback.print_exception(e)

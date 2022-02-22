@@ -1,5 +1,7 @@
 import aiohttp
 
+from ImageEditor import ImageEditor
+from tools.SpriteTileGenerator import tiles_to_png
 from models import RawPngResponse
 
 class MapRequester:
@@ -18,9 +20,3 @@ class MapRequester:
                                    f"{self.IMAGE_BY_CENTER_BASE}/{x},{y}/{zoomLevel}",
                                    params={'mapSize': f"{self.IMG_SIZE},{self.IMG_SIZE}", 'key':self._api_key}) as resp:
             return RawPngResponse(await resp.read())
-
-    def from_gb_input(self, data):
-        return self.tmp_global
-
-
-mapRequester = MapRequester('private/bing_api_key')

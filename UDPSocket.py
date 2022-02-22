@@ -2,12 +2,21 @@ import socket
 import asyncio
 import struct
 import traceback
-from typing import Tuple
+from typing import Tuple, Dict
 
 from ImageEditor import ImageEditor
 from MapRequester import MapRequester
 from tools.SpriteTileGenerator import tiles_to_png, old_tiles_to_png
 
+from dataclasses import dataclass
+
+ADDR = str
+
+@dataclass
+class ClientCoords:
+    x : float
+    y : float
+    zoom : int
 
 class GBServer:
     def __init__(self, host="127.0.0.1", port=23568):
@@ -16,6 +25,7 @@ class GBServer:
         self.mapRequester = MapRequester('private/bing_api_key')
 
         #client location
+        self.client : Dict[ADDR, ClientCoords]= {}
         self.x = 0
         self.y = 0
         self.zoom = 1
@@ -25,36 +35,45 @@ class GBServer:
             s.bind((self.host, self.port))
             while True:
                 data, addr = s.recvfrom(512)
+                print(addr)
                 if not data:
                     continue
-                r = self.callback(data)
+                r = self.callback(data, addr)
                 s.sendto(r, addr)
 
-    def callback(self, data) -> bytes:
+    def callback(self, data, addr) -> bytes:
         try:
+            coords = self.client[addr[0]]
             print(data)
             op, h, v, zoom = struct.unpack("<BffB", data)
-            self.zoom = zoom + 1
-            print(op, h, v, zoom)
-            if h < 0: # left
-                self.x -= (240 / self.zoom**2)
-            elif h > 0: # right
-                self.x += (240 / self.zoom**2)
-            if v < 0: # Down
-                self.y -= (240 / self.zoom**2)
-            elif v > 0:  # Up
-                self.y += (240 / self.zoom**2)
-            if self.x > 180:
-                self.x = -360 + self.x
-            if self.x < -180:
-                self.x = 360 - self.x
-            if self.y > 90:
-                self.y = -180 + self.y
-            if self.y < -90:
-                self.y = 180 - self.y
-            return asyncio.run(self.request_gb_bytes())
+            if op == 1:
+                coords.zoom = zoom + 1
+                print(op, h, v, zoom)
+                if h < 0: # left
+                    coords.x -= (240 / coords.zoom**2)
+                elif h > 0: # right
+                    coords.x += (240 / coords.zoom**2)
+                if v < 0: # Down
+                    coords.y -= (240 / coords.zoom**2)
+                elif v > 0:  # Up
+                    coords.y += (240 / coords.zoom**2)
+                if coords.x > 180:
+                    coords.x = -360 + coords.x
+                if coords.x < -180:
+                    coords.x = 360 - coords.x
+                if coords.y > 90:
+                    coords.y = -180 + coords.y
+                if coords.y < -90:
+                    coords.y = 180 - coords.y
+                return asyncio.run(self.request_gb_bytes())
+            if op == 2:
+                x, y = self.mapRequester.get_coords_for_query(data[1:])
+                if not x and not y:
+                    return b"\x02Location not found"
+                coords.x = x
+                coords.y = y
+                return asyncio.run(self.request_gb_bytes())
         except Exception as e:
-            traceback.print_exception(e)
             return b"\x02" + bytes(e.__class__.__name__, encoding="ASCII")
 
     async def request_gb_bytes(self):
